@@ -1,0 +1,5 @@
+/Session.vim
+
+*.o
+/tests/tests
+/client
