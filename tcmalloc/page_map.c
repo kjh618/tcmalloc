@@ -7,8 +7,6 @@
 #include "common.h"
 #include "span.h"
 
-// TODO: Change API so that including `page_map.h` is unnecessary
-
 #define RADIX_TREE_NUM_BITS 18
 #define RADIX_TREE_NODE_SIZE ((size_t)1 << RADIX_TREE_NUM_BITS)
 #define RADIX_TREE_MASK (RADIX_TREE_NODE_SIZE - 1)

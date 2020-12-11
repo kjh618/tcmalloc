@@ -8,8 +8,6 @@
 #include "object.h"
 #include "page_map.h"
 
-// TODO: Change API so that including `page_map.h` is unnecessary
-
 static struct span *span_new_with(void *page_start, size_t num_pages) {
     assert(1 <= num_pages && num_pages <= MAX_NUM_PAGES);
 

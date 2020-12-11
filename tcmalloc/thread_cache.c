@@ -6,7 +6,7 @@
 #include "object.h"
 #include "central_free_list.h"
 
-#define THREAD_CACHE_GC_LIMIT ((size_t)1 << 20)
+#define THREAD_CACHE_GC_LIMIT ((size_t)1 << 10)
 
 struct thread_cache {
     struct object_list free_objects[NUM_CLASSES];

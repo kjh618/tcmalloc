@@ -12,7 +12,7 @@
 #include "central_free_list.h"
 #include "thread_cache.h"
 
-#undef DEBUG_PRINT
+#define DEBUG_PRINT
 
 // TODO: Figure out optimum batch size etc.
 // TODO: Use better allocation mechanism for spans etc. Also should consider zeroing
@@ -97,7 +97,6 @@ void tc_free(void *ptr) {
         assert(false);
         return;
     }
-
 
 #ifdef DEBUG_PRINT
     printf("********** free(%p) **********\n\n", ptr);
