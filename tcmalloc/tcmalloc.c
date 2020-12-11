@@ -36,8 +36,6 @@ void *tc_thread_init() {
     return thread_cache;
 }
 
-// TODO: Debug print when error happened?
-
 void *tc_malloc(size_t size) {
     void *ptr;
     

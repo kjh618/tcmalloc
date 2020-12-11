@@ -1,6 +1,6 @@
 #include "vector.h"
 #include <string.h>
-#include "../tcmalloc/tcmalloc.h"
+#include "malloc.h"
 
 struct vector {
     size_t elem_size;
@@ -12,7 +12,7 @@ struct vector {
 };
 
 struct vector *vector_new(size_t elem_size, bool doubling, size_t initial_capacity) {
-    struct vector *vec = tc_malloc(sizeof(struct vector));
+    struct vector *vec = malloc(sizeof(struct vector));
     if (vec == NULL) {
         return NULL;
     }
@@ -20,9 +20,9 @@ struct vector *vector_new(size_t elem_size, bool doubling, size_t initial_capaci
     vec->doubling = doubling;
     vec->size = 0;
     vec->capacity = initial_capacity;
-    vec->array = tc_malloc(vec->capacity * vec->elem_size);
+    vec->array = malloc(vec->capacity * vec->elem_size);
     if (vec->array == NULL) {
-        tc_free(vec);
+        free(vec);
         return NULL;
     }
 
@@ -33,17 +33,17 @@ void vector_free(struct vector *vec, void (*ptr_elem_free)(void *ptr_elem)) {
     if (ptr_elem_free != NULL) {
         vector_iter(vec, ptr_elem_free);
     }
-    tc_free(vec->array);
-    tc_free(vec);
+    free(vec->array);
+    free(vec);
 }
 
 static int vector_change_capacity(struct vector *vec, size_t new_capacity) {
-    void *new_array = tc_malloc(new_capacity * vec->elem_size);
+    void *new_array = malloc(new_capacity * vec->elem_size);
     if (new_array == NULL) {
         return -1;
     }
     memcpy(new_array, vec->array, vec->size * vec->elem_size);
-    tc_free(vec->array);
+    free(vec->array);
     vec->array = new_array;
     vec->capacity = new_capacity;
     return 0;
@@ -56,7 +56,7 @@ int vector_shrink_to_fit(struct vector *vec) {
 
 void *vector_into_array(struct vector *vec) {
     void *array = vec->array;
-    tc_free(vec);
+    free(vec);
     return array;
 }
 

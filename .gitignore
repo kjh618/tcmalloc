@@ -1,5 +1,6 @@
 /Session.vim
 
 *.o
-/tests/tests
+/tests/tests_libc
+/tests/tests_tc
 /client

@@ -1,11 +1,9 @@
 #include <stdio.h>
-#include <stddef.h>
-#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 #include <pthread.h>
-#include <string.h>
-#include <stdlib.h>
-#include "../tcmalloc/tcmalloc.h"
+#include "malloc.h"
 #include "vector.h"
 
 
@@ -21,7 +19,7 @@ static __thread struct test1_malloc_info test1_malloc_info[1000];
 
 static size_t test1_malloc(size_t size) {
     size_t malloc_index = test1_num_mallocs;
-    test1_malloc_info[malloc_index].ptr = tc_malloc(size);
+    test1_malloc_info[malloc_index].ptr = malloc(size);
     test1_malloc_info[malloc_index].size = size;
     test1_num_mallocs++;
     return malloc_index;
@@ -59,7 +57,7 @@ static bool test1_check_data(size_t tid, size_t malloc_index) {
 static void test1_free(size_t malloc_index) {
     assert(test1_malloc_info[malloc_index].ptr != NULL && test1_malloc_info[malloc_index].size > 0);
 
-    tc_free(test1_malloc_info[malloc_index].ptr);
+    free(test1_malloc_info[malloc_index].ptr);
     test1_malloc_info[malloc_index].ptr = NULL;
     test1_malloc_info[malloc_index].size = 0;
 }
@@ -194,7 +192,7 @@ static void *test2(void *ptid) {
     }
 
     for (size_t i = 0; i < NUM_ROWS; i++) {
-        tc_free(array_2d[i]);
+        free(array_2d[i]);
     }
 
     fprintf(stderr, "PASS: tid: %zu\n", tid);
