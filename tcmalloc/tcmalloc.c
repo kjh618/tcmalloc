@@ -12,7 +12,7 @@
 #include "central_free_list.h"
 #include "thread_cache.h"
 
-#define DEBUG_PRINT
+#undef DEBUG_PRINT
 
 // TODO: Figure out optimum batch size etc.
 // TODO: Use better allocation mechanism for spans etc. Also should consider zeroing
@@ -58,9 +58,10 @@ void *tc_malloc(size_t size) {
             pthread_spin_unlock(&global_lock);
             return NULL;
         }
+        assert(span->state == SPAN_FREE);
         span->state = SPAN_ALLOCATED_LARGE;
-        pthread_spin_unlock(&global_lock);
         ptr = span->page_start;
+        pthread_spin_unlock(&global_lock);
     }
 
 #ifdef DEBUG_PRINT

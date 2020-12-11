@@ -67,7 +67,9 @@ struct span *span_split(struct span *span, size_t num_pages) {
     assert(1 <= span->num_pages && span->num_pages <= MAX_NUM_PAGES);
     page_map_insert(span);
 
-    return span_new_with((char *)span->page_start + span->num_pages * PAGE_SIZE, num_pages);
+    struct span *new_span = span_new_with((char *)span->page_start + span->num_pages * PAGE_SIZE, num_pages);
+
+    return new_span;
 }
 
 void span_make_objects(struct span *span, size_t object_class) {
@@ -76,11 +78,13 @@ void span_make_objects(struct span *span, size_t object_class) {
 
     span->state = SPAN_ALLOCATED_SMALL;
     size_t object_size = class_get_size(object_class);
+    size_t count = 0;
     for (struct object *object = span->page_start;
         (char *)object + object_size <= (char *)span->page_start + span->num_pages * PAGE_SIZE;
         object = (struct object *)((char *)object + object_size)
     ) {
         object_list_push_front(&span->free_objects, object);
+        count++;
     }
     span->object_class = object_class;
 }
@@ -99,14 +103,14 @@ void span_coalesce(struct span *span) {
     page_map_remove(span);
 
     size_t page_number = (uintptr_t)span->page_start / PAGE_SIZE;
-
     size_t page_number_before = page_number - 1;
+    size_t page_number_after = page_number + span->num_pages;
+
     struct span *span_before = page_map_get(page_number_before);
     if (span_before != NULL && span_before->state == SPAN_FREE) {
         span_merge_with(span, span_before, true);
     }
 
-    size_t page_number_after = page_number + span->num_pages;
     struct span *span_after = page_map_get(page_number_after);
     if (span_after != NULL && span_after->state == SPAN_FREE) {
         span_merge_with(span, span_after, false);
@@ -118,7 +122,8 @@ void span_coalesce(struct span *span) {
 void span_print(struct span *span) {
     assert(span_is_consistent(span));
 
-    printf("{ %zu pages from %p, state %d, (%zu objects of class %zd) }",
+    printf("(%p) { %zu pages from %p, state %d, (%zu objects of class %zd) }",
+        span,
         span->num_pages, span->page_start,
         span->state,
         object_list_count(&span->free_objects), span->object_class
